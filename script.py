@@ -91,10 +91,12 @@ async def list(ctx, *, question):
 
 @bot.command()
 async def help(ctx):
-  help_message = ("!play <rb/co> to join the bingo.\n"
-                  "Example: '!play rb' or '!play co'\n"
-                  "!list <rb/co> to see the list of all the possibilities.\n"
-                  "Example: '!list rb' or '!list co'")
+  help_message = ("**!play <rb/co>** to join the bingo.\n"
+                  "Example: '**!play rb**' or '**!play co**'\n"
+                  "**!list <rb/co>** to see the list of all the possibilities.\n"
+                  "Example: '**!list rb**' or '**!list co**'\n"
+                  "**__MODERATOR ONLY__**\n"
+                  "!clear cleans up everything in the channel")
   await ctx.send(help_message)
 
 
