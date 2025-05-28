@@ -105,6 +105,10 @@ async def list(ctx, *, question):
 
 @bot.command()
 async def help(ctx):
+  if ctx.channel.name != "khan-bingo":
+    await ctx.send("You can only use this command in the khan-bingo channel.")
+    return
+
   help_message = (
       "**!play <rb/co>** to join the bingo.\n"
       "Example: '**!play rb**' or '**!play co**'\n"
@@ -203,7 +207,7 @@ async def card(ctx, *, question):
         draw.rectangle(
             (x * offset, y * offset, x * offset + offset, y * offset + offset),
             outline=0,
-            fill=(0, 255, 0))
+            fill=(0, 128, 0))
       wrappedText = get_wrapped_text(currentSlot, bingoFont,
                                      offset - 2 * margin)
       draw.text((margin + x * offset, margin + y * offset),
