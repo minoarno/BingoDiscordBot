@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 from PIL import Image, ImageDraw, ImageFont
 import random
-import webbrowser
 
 import webserver
 
@@ -45,6 +44,8 @@ rbBingoList = [
     "Training cannon", "Do we host to avoid twats ?",
     "Someone forgetting to participate."
 ]
+rbBingoDictionary = []
+rbBingoCards = []
 
 coBingoList = [
     "Can I have allowance ?", "Placed the cannon outside of instance ?",
@@ -62,10 +63,18 @@ coBingoList = [
     "Someone is loaded a ton of bcn", "Red karma griefing", "Astralis moment"
 ]
 
+coBingoDictionary = []
+coBingoCards = []
 
 @bot.event
 async def on_ready():
   print(f"We logged in as {bot.user}")
+
+  for entry in rbBingoList:
+      rbBingoDictionary.append({entry : False})
+
+  for entry in coBingoList:
+      coBingoDictionary.append({entry : False})
 
 
 @bot.event
@@ -124,13 +133,11 @@ async def play(ctx, *, question):
     draw.rectangle((0, x * offset, length, x * offset + 1), outline=0, fill=1)
     draw.rectangle((x * offset, 0, x * offset + 1, length), outline=0, fill=1)
 
-  randomList = []
-  listTypeText = "Invalid List"
   if "rb" in question:
-    randomList = random.sample(rbBingoList, 25)
+    random_list = random.sample(rbBingoList, 25)
     listTypeText = "Red Bloods"
   elif "co" in question:
-    randomList = random.sample(coBingoList, 25)
+    random_list = random.sample(coBingoList, 25)
     listTypeText = "Coalition"
   else:
     await ctx.send("Please specify a list: example '!play rb' or '!play co'")
@@ -138,15 +145,23 @@ async def play(ctx, *, question):
 
   for x in range(0, amount):
     for y in range(0, amount):
-      #draw.rectangle((x * offset, y * offset, x * offset + offset, y * offset + offset), outline=0, fill=1
-      wrappedText = get_wrapped_text(randomList[x * amount + y], bingoFont,
-                                     offset - 2 * margin)
+      #draw.rectangle((x * offset, y * offset, x * offset + offset, y * offset + offset), outline=0, fill=1)
+      wrappedText = get_wrapped_text(random_list[x * amount + y], bingoFont, offset - 2 * margin)
       draw.text((margin + x * offset, margin + y * offset),
                 wrappedText,
                 fill=(255, 255, 255),
                 font=bingoFont)
 
   imgName = f"{ctx.author.name}.PNG"
+
+  if "rb" in question:
+    rbBingoCards.append(imgName, random_list)
+  elif "co" in question:
+    coBingoCards.append(imgName, random_list)
+  else:
+    await ctx.send("Please specify a list: example '!play rb' or '!play co'")
+    return
+
   img.save(imgName, save_all=True)
   embeddedImage = discord.Embed(
       title=f"{listTypeText} bingo card for {ctx.author.name}")
@@ -154,6 +169,60 @@ async def play(ctx, *, question):
   embeddedImage.set_image(url=f"attachment://{imgName}")
   await ctx.send(file=embeddedFile, embed=embeddedImage)
 
+@bot.command()
+async def show(ctx, *, question):
+    if ctx.channel.name != "khan-bingo":
+        await ctx.send("You can only use this command in the khan-bingo channel.")
+        return
+
+    img = Image.new('RGBA', size=(length, length), color=(120, 120, 120))
+    draw = ImageDraw.Draw(img)  # creates a draw object
+
+    for x in range(1, amount):
+        draw.rectangle((0, x * offset, length, x * offset + 1), outline=0, fill=1)
+        draw.rectangle((x * offset, 0, x * offset + 1, length), outline=0, fill=1)
+
+    if "rb" in question:
+        bingo_card = rbBingoCards[ctx.author.name]
+        listTypeText = "Red Bloods"
+    elif "co" in question:
+        bingo_card = coBingoCards[ctx.author.name]
+        listTypeText = "Coalition"
+    else:
+        await ctx.send("Please specify a list: example '!play rb' or '!play co'")
+        return
+
+    for x in range(0, amount):
+        for y in range(0, amount):
+            if coBingoDictionary[bingo_card[x * amount + y]]:
+                draw.rectangle((x * offset, y * offset, x * offset + offset, y * offset + offset), outline=0, fill=(0,255,0))
+            wrappedText = get_wrapped_text(bingo_card[x * amount + y], bingoFont, offset - 2 * margin)
+            draw.text((margin + x * offset, margin + y * offset),
+                      wrappedText,
+                      fill=(255, 255, 255),
+                      font=bingoFont)
+
+    imgName = f"{ctx.author.name}.PNG"
+    img.save(imgName, save_all=True)
+    img.show()
+    embeddedImage = discord.Embed(
+        title=f"{listTypeText} bingo card for {ctx.author.name}")
+    embeddedFile = discord.File(imgName, filename=imgName)
+    embeddedImage.set_image(url=f"attachment://{imgName}")
+    await ctx.send(file=embeddedFile, embed=embeddedImage)
+
+
+@bot.command()
+async def register(ctx, *, question):
+    if ctx.channel.name != "khan-bingo":
+        await ctx.send("You can only use this command in the khan-bingo channel.")
+        return
+
+    if rbBingoDictionary.get(question):
+        rbBingoDictionary[question] = True
+
+    if coBingoDictionary.get(question):
+        coBingoDictionary[question] = True
 
 @bot.command()
 async def clear(ctx):
@@ -163,6 +232,15 @@ async def clear(ctx):
   if not ctx.author.guild_permissions.manage_messages:
     await ctx.send("You do not have permission to use this command.")
     return
+
+  rbBingoDictionary.clear()
+  for entry in rbBingoList:
+      rbBingoDictionary.append({entry : False})
+
+  coBingoDictionary.clear()
+  for entry in coBingoList:
+      coBingoDictionary.append({entry : False})
+
   await ctx.channel.purge(limit=1000)
 
 webserver.keep_alive()
