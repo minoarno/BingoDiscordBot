@@ -176,7 +176,7 @@ async def play(ctx, *, question):
 
 
 @bot.command()
-async def card(ctx, *, question):
+async def show(ctx, *, question):
   if ctx.channel.name != "khan-bingo":
     await ctx.send("You can only use this command in the khan-bingo channel.")
     return
