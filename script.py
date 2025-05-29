@@ -114,8 +114,8 @@ async def help(ctx):
       "**!show <rb/co>** shows your current bingo card. - Example: '**!show rb**' or '**!show co**'\n"
       "**!list <rb/co>** to see the list of all the possibilities. - Example: '**!list rb**' or '**!list co**'\n"
       "**!register <entry>** to register one of the events that have occurred. - Example: '**!register bcn?**' or '**!register level x?**'\n"
-      "**__MODERATOR ONLY__**\n"
-      "!clear cleans up everything in the channel")
+      "\n**__MODERATOR ONLY__**\n"
+      "**!clear** cleans up everything in the channel")
   await ctx.send(help_message)
 
 
