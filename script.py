@@ -100,7 +100,7 @@ async def list(ctx, *, question):
   elif "co" in question:
     await ctx.send(f"The Coalition list is {coBingoList}")
   else:
-    await ctx.send(f"Please specify a list: example !list rb or !list co")
+    await ctx.send(f"Please specify a list: example **!list rb** or **!list co**")
 
 
 @bot.command()
@@ -152,7 +152,7 @@ async def play(ctx, *, question):
     coBingoCards[ctx.author.name] = random_list
     listTypeText = "Coalition"
   else:
-    await ctx.send("Please specify a list: example '!play rb' or '!play co'")
+    await ctx.send("Please specify a list: example **'!play rb'** or **'!play co'**")
     return
 
   for x in range(0, amount):
