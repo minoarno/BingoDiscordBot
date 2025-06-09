@@ -31,36 +31,37 @@ offset = (length / amount)
 margin = 10
 
 rbBingoList = [
-    "Insert server?", "Do we need to buy cannon?", "Can I have allowance",
-    "Placed the cannon outside of instance", "lEvEl X?",
-    "Puturum first mudster first?", "Harper break", "Bcn?",
-    "Comparing someone to oresu", "Ctg?", "Time / start when?",
+    "Insert server", "Do we need to buy cannon", "Can I have allowance",
+    "Placed the cannon outside of instance", "lEvEl X",
+    "Puturum first mudster first", "Harper break", "Bcn",
+    "Comparing someone to oresu", "Ctg", "Time / start when",
     "ppl jumping into water before khan dies", "Mimi shenanigans",
     "Alkamor calling someone a cretin (deservably)",
     "Vell taxi, vell first or vell break", "Khan platoon",
     "Someone from RB dying on bosses like a twat",
     "Somebody getting a jackpot drop", "PPl autopathing to boss",
     "Someone crashing", "Can someone deploy cannon", "Someone dying to khan",
-    "Training cannon", "Do we host to avoid twats ?",
-    "Someone forgetting to participate."
+    "Training cannon", "Do we host to avoid twats",
+    "Someone forgetting to participate"
 ]
 rbBingoDictionary = {}
 rbBingoCards = {}
 
 coBingoList = [
-    "Can I have allowance ?", "Placed the cannon outside of instance ?",
+    "Can I have allowance", "Placed the cannon outside of instance",
     "Ppl jumping into water before khan dies",
     "Alkamor calling someone a cretin (deservably)",
     "Somebody getting a jackpot drop", "PPl autopathing to boss",
     "Someone crashing", "Someone dying to khan",
-    "Someone forgetting to participate.", "Twat posting 435345435 heart.",
+    "Someone forgetting to participate", "Twat posting 435345435 heart",
     "Twilight Warrior clicks a button", "Lecko clicks button",
     "Player is in a platoon with Inso", "Inso not even being in game",
     "Someone doesnt get loot and complains", "Inso says fuck you",
     "Petty says she’s new", "Reed drops a strike",
     "RB not clicking the button", "Registration error",
     "Someone crafting a treasure item", "Someone is wrong position",
-    "Someone is loaded a ton of bcn", "Red karma griefing", "Astralis moment"
+    "Someone is loaded a ton of bcn", "Red karma griefing", "Astralis moment",
+    "Ravenwood shit in bingo", "inso is late"
 ]
 
 coBingoDictionary = {}
@@ -113,7 +114,7 @@ async def help(ctx):
       "**!play <rb/co>** to join the bingo. - Example: '**!play rb**' or '**!play co**'\n"
       "**!show <rb/co>** shows your current bingo card. - Example: '**!show rb**' or '**!show co**'\n"
       "**!list <rb/co>** to see the list of all the possibilities. - Example: '**!list rb**' or '**!list co**'\n"
-      "**!register <entry>** to register one of the events that have occurred. - Example: '**!register bcn?**' or '**!register level x?**'\n"
+      "**!register <entry>** to register one of the events that have occurred. - Example: '**!register bcn**' or '**!register level x**'\n"
       "\n**__MODERATOR ONLY__**\n"
       "**!clear** cleans up everything in the channel")
   await ctx.send(help_message)
@@ -130,6 +131,33 @@ def get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int):
       lines.append(word)
   return '\n'.join(lines)
 
+async def did_any_player_get_bingo(ctx, bingoType):
+  if "rb" in bingoType:
+    bingo_cards = rbBingoCards
+    comparingCards = rbBingoDictionary
+  elif "co" in bingoType:
+    bingo_cards = coBingoCards
+    comparingCards = coBingoDictionary
+
+  for playerName in bingo_cards:
+    if(did_player_get_bingo(playerName, comparingCards, bingo_cards[playerName])):
+      await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
+
+
+def did_player_get_bingo(playerName, comparingCards, bingo_card):
+
+  for x in range(0, amount):
+    if comparingCards[bingo_card[x * amount].lower()] and comparingCards[bingo_card[x * amount + 1].lower()] and comparingCards[bingo_card[x * amount + 2].lower()] and comparingCards[bingo_card[x * amount + 3].lower()] and comparingCards[bingo_card[x * amount + 4].lower()]:
+      return True
+    if comparingCards[bingo_card[x * amount].lower()] and comparingCards[bingo_card[(x+1) * amount].lower()] and comparingCards[bingo_card[(x+2) * amount].lower()] and comparingCards[bingo_card[(x+3) * amount].lower()] and comparingCards[bingo_card[(x+4) * amount].lower()]:
+      return True
+    
+  if comparingCards[0] and comparingCards[6] and comparingCards[12] and comparingCards[18] and comparingCards[24]:
+    return True
+  if comparingCards[4] and comparingCards[8] and comparingCards[12] and comparingCards[16] and comparingCards[20]:
+    return True
+  
+  return False
 
 @bot.command()
 async def play(ctx, *, question):
@@ -146,10 +174,12 @@ async def play(ctx, *, question):
   if "rb" in question:
     random_list = random.sample(rbBingoList, 25)
     rbBingoCards[ctx.author.name] = random_list
+    comparingCards = rbBingoDictionary
     listTypeText = "Red Bloods"
   elif "co" in question:
     random_list = random.sample(coBingoList, 25)
     coBingoCards[ctx.author.name] = random_list
+    comparingCards = coBingoDictionary
     listTypeText = "Coalition"
   else:
     await ctx.send("Please specify a list: example **'!play rb'** or **'!play co'**")
@@ -157,7 +187,13 @@ async def play(ctx, *, question):
 
   for x in range(0, amount):
     for y in range(0, amount):
-      wrappedText = get_wrapped_text(random_list[x * amount + y], bingoFont,
+      currentSlot = random_list[x * amount + y].lower()
+      if comparingCards[currentSlot]:
+        draw.rectangle(
+            (x * offset, y * offset, x * offset + offset, y * offset + offset),
+            outline=0,
+            fill=(0, 128, 0))
+      wrappedText = get_wrapped_text(currentSlot, bingoFont,
                                      offset - 2 * margin)
       draw.text((margin + x * offset, margin + y * offset),
                 wrappedText,
@@ -232,12 +268,14 @@ async def register(ctx, *, question):
     return
 
   if question.lower() in rbBingoDictionary:
-    rbBingoDictionary[question] = True
+    rbBingoDictionary[question.lower()] = True
     await ctx.send(f"Registered {question} for Red Bloods")
+    did_any_player_get_bingo(ctx, "rb")
 
   if question.lower() in coBingoDictionary:
-    coBingoDictionary[question] = True
+    coBingoDictionary[question.lower()] = True
     await ctx.send(f"Registered {question} for Coalition")
+    did_any_player_get_bingo(ctx, "co")
 
 
 @bot.command()
@@ -252,6 +290,7 @@ async def clear(ctx):
   clearBingo()
 
   await ctx.channel.purge(limit=1000)
+
 
 
 webserver.keep_alive()
