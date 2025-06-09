@@ -140,11 +140,11 @@ async def did_any_player_get_bingo(ctx, bingoType):
     comparingCards = coBingoDictionary
 
   for playerName in bingo_cards:
-    if(did_player_get_bingo(playerName, comparingCards, bingo_cards[playerName])):
+    if(did_player_get_bingo(comparingCards, bingo_cards[playerName])):
       await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
 
 
-def did_player_get_bingo(playerName, comparingCards, bingo_card):
+def did_player_get_bingo(comparingCards, bingo_card):
 
   for x in range(0, amount):
     if comparingCards[bingo_card[x * amount].lower()] and comparingCards[bingo_card[x * amount + 1].lower()] and comparingCards[bingo_card[x * amount + 2].lower()] and comparingCards[bingo_card[x * amount + 3].lower()] and comparingCards[bingo_card[x * amount + 4].lower()]:
@@ -152,9 +152,9 @@ def did_player_get_bingo(playerName, comparingCards, bingo_card):
     if comparingCards[bingo_card[x * amount].lower()] and comparingCards[bingo_card[(x+1) * amount].lower()] and comparingCards[bingo_card[(x+2) * amount].lower()] and comparingCards[bingo_card[(x+3) * amount].lower()] and comparingCards[bingo_card[(x+4) * amount].lower()]:
       return True
     
-  if comparingCards[0] and comparingCards[6] and comparingCards[12] and comparingCards[18] and comparingCards[24]:
+  if comparingCards[bingo_card[0]] and comparingCards[bingo_card[6]] and comparingCards[bingo_card[12]] and comparingCards[bingo_card[18]] and comparingCards[bingo_card[24]]:
     return True
-  if comparingCards[4] and comparingCards[8] and comparingCards[12] and comparingCards[16] and comparingCards[20]:
+  if comparingCards[bingo_card[4]] and comparingCards[bingo_card[8]] and comparingCards[bingo_card[12]] and comparingCards[bingo_card[16]] and comparingCards[bingo_card[20]]:
     return True
   
   return False
