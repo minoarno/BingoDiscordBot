@@ -268,12 +268,12 @@ async def register(ctx, *, question):
   if question.lower() in rbBingoDictionary:
     rbBingoDictionary[question.lower()] = True
     await ctx.send(f"Registered {question} for Red Bloods")
-    did_any_player_get_bingo(ctx, "rb")
+    await did_any_player_get_bingo(ctx, "rb")
 
   if question.lower() in coBingoDictionary:
     coBingoDictionary[question.lower()] = True
     await ctx.send(f"Registered {question} for Coalition")
-    did_any_player_get_bingo(ctx, "co")
+    await did_any_player_get_bingo(ctx, "co")
 
 
 @bot.command()
