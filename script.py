@@ -131,21 +131,7 @@ def get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int):
       lines.append(word)
   return '\n'.join(lines)
 
-async def did_any_player_get_bingo(ctx, bingoType):
-  if "rb" in bingoType:
-    bingo_cards = rbBingoCards
-    comparingCards = rbBingoDictionary
-  elif "co" in bingoType:
-    bingo_cards = coBingoCards
-    comparingCards = coBingoDictionary
-
-  for playerName in bingo_cards:
-    if(did_player_get_bingo(comparingCards, bingo_cards[playerName])):
-      await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
-
-
 def did_player_get_bingo(comparingCards, bingo_card):
-
   for x in range(0, amount):
     if comparingCards[bingo_card[x * amount].lower()] and comparingCards[bingo_card[x * amount + 1].lower()] and comparingCards[bingo_card[x * amount + 2].lower()] and comparingCards[bingo_card[x * amount + 3].lower()] and comparingCards[bingo_card[x * amount + 4].lower()]:
       return True
@@ -158,6 +144,18 @@ def did_player_get_bingo(comparingCards, bingo_card):
     return True
   
   return False
+
+async def did_any_player_get_bingo(ctx, bingoType : str):
+  if "rb" in bingoType:
+    bingo_cards = rbBingoCards
+    comparingCards = rbBingoDictionary
+  elif "co" in bingoType:
+    bingo_cards = coBingoCards
+    comparingCards = coBingoDictionary
+
+  for playerName in bingo_cards:
+    if(did_player_get_bingo(comparingCards, bingo_cards[playerName])):
+      await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
 
 @bot.command()
 async def play(ctx, *, question):
