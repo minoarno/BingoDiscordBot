@@ -153,9 +153,10 @@ async def did_any_player_get_bingo(ctx, bingoType : str):
     bingo_cards = coBingoCards
     comparingCards = coBingoDictionary
 
-  for playerName in bingo_cards:
-    if(did_player_get_bingo(comparingCards, bingo_cards[playerName])):
+  for playerName, bingo_card in bingo_cards:
+    if(did_player_get_bingo(comparingCards, bingo_card)):
       await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
+  return
 
 @bot.command()
 async def play(ctx, *, question):
