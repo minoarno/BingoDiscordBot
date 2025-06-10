@@ -156,6 +156,7 @@ async def did_any_player_get_bingo(ctx, bingoType : str):
   for playerName, bingo_card in bingo_cards:
     if(did_player_get_bingo(comparingCards, bingo_card)):
       await ctx.send(f"**{playerName.upper()} HAS A BINGO!!!**")
+  
   return
 
 @bot.command()
